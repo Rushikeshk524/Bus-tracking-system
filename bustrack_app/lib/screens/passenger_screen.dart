@@ -21,12 +21,14 @@ class _PassengerScreenState extends State<PassengerScreen> {
   bool busOnline = false;
   String notification = '';
   List stops = [];
+  List allStops = [];
   final mapController = MapController();
 
   @override
   void initState() {
     super.initState();
     fetchBuses();
+    fetchAllStops();
   }
 
   Future<void> fetchBuses() async {
@@ -48,6 +50,17 @@ class _PassengerScreenState extends State<PassengerScreen> {
       });
     } catch (e) {
       debugPrint('Error fetching stops: $e');
+    }
+  }
+
+  Future<void> fetchAllStops() async {
+    try {
+      final res = await http.get(Uri.parse('$baseUrl/stops'));
+      setState(() {
+        allStops = jsonDecode(res.body);
+      });
+    } catch (e) {
+      debugPrint('Error fetching all stops: $e');
     }
   }
 
@@ -103,8 +116,9 @@ class _PassengerScreenState extends State<PassengerScreen> {
 
   List<Marker> _buildMarkers() {
     final markers = <Marker>[];
+    final stopsToRender = selectedBus == null ? allStops : stops;
 
-    for (final s in stops) {
+    for (final s in stopsToRender) {
       final lat = (s['lat'] as num).toDouble();
       final lng = (s['lng'] as num).toDouble();
       markers.add(
@@ -178,10 +192,11 @@ class _PassengerScreenState extends State<PassengerScreen> {
 
   LatLng get _initialCenter {
     if (busLocation != null) return busLocation!;
-    if (stops.isNotEmpty) {
+    final stopsToRender = selectedBus == null ? allStops : stops;
+    if (stopsToRender.isNotEmpty) {
       return LatLng(
-        (stops[0]['lat'] as num).toDouble(),
-        (stops[0]['lng'] as num).toDouble(),
+        (stopsToRender[0]['lat'] as num).toDouble(),
+        (stopsToRender[0]['lng'] as num).toDouble(),
       );
     }
     return const LatLng(19.2307, 72.8567);
@@ -194,6 +209,42 @@ class _PassengerScreenState extends State<PassengerScreen> {
         title: const Text('Track My Bus'),
         backgroundColor: const Color(0xFF1565C0),
         foregroundColor: Colors.white,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFF1565C0),
+              ),
+              child: Text('BusTrack Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Passenger View'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.drive_eta),
+              title: const Text('Driver Login'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/driver');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.admin_panel_settings),
+              title: const Text('Moderator Login'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/moderator');
+              },
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -260,11 +311,20 @@ class _PassengerScreenState extends State<PassengerScreen> {
 
           Expanded(
             child: selectedBus == null
-                ? const Center(
-                    child: Text(
-                      'Select a bus to see its location',
-                      style: TextStyle(color: Colors.grey),
+                ? FlutterMap(
+                    mapController: mapController,
+                    options: MapOptions(
+                      initialCenter: _initialCenter,
+                      initialZoom: 12,
                     ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.bustrack.app',
+                      ),
+                      MarkerLayer(markers: _buildMarkers()),
+                    ],
                   )
                 : busLocation == null && stops.isEmpty
                     ? Center(

@@ -76,9 +76,12 @@ class _LoginScreenState extends State<LoginScreen> {
         foregroundColor: Colors.white,
         title: Text(roleLabel),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
-        child: Column(
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(32),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Column(
           children: [
             const SizedBox(height: 40),
             CircleAvatar(
@@ -188,6 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ],
+            ),
+          ),
         ),
       ),
     );
