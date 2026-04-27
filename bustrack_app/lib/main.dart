@@ -1,7 +1,6 @@
+import 'screens/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'screens/driver_screen.dart';
 import 'screens/passenger_screen.dart';
-import 'screens/moderator_screen.dart';
 
 void main() => runApp(const BusTrackApp());
 
@@ -48,7 +47,7 @@ class RoleSelectScreen extends StatelessWidget {
                 label: '🧑‍✈️  I am a Driver',
                 color: const Color(0xFFE65100),
                 onTap: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const DriverScreen())),
+                MaterialPageRoute(builder: (_) => const LoginScreen(role: 'driver'))),
               ),
               const SizedBox(height: 16),
               _RoleButton(
@@ -61,8 +60,8 @@ class RoleSelectScreen extends StatelessWidget {
               _RoleButton(
                 label: '🛠️  I am a Moderator',
                 color: const Color(0xFF2E7D32),
-                onTap: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const ModeratorScreen())),
+               onTap: () => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const LoginScreen(role: 'moderator'))),
               ),
             ],
           ),

@@ -30,6 +30,22 @@ const Stop = mongoose.model('Stop', new mongoose.Schema({
   time:     String,
 }));
 
+// Hardcoded users for demo
+const USERS = [
+  { username: 'mod1',     password: 'mod123',    role: 'moderator', name: 'Priya Sharma' },
+  { username: 'mod2',     password: 'mod456',    role: 'moderator', name: 'Rahul Mehta' },
+  { username: 'driver1',  password: 'drive123',  role: 'driver',    name: 'Ramesh Kumar' },
+  { username: 'driver2',  password: 'drive456',  role: 'driver',    name: 'Suresh Patil' },
+  { username: 'driver3',  password: 'drive789',  role: 'driver',    name: 'Mahesh Jadhav' },
+];
+
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  const user = USERS.find(u => u.username === username && u.password === password);
+  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+  res.json({ role: user.role, name: user.name, username: user.username });
+});
+
 // ── REST routes ─────────────────────────────────────────
 app.get('/buses', async (req, res) => {
   res.json(await Bus.find());

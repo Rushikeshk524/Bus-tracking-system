@@ -7,7 +7,8 @@ import 'dart:convert';
 import '../config.dart';
 
 class DriverScreen extends StatefulWidget {
-  const DriverScreen({super.key});
+  final String userName;
+  const DriverScreen({super.key, required this.userName});
 
   @override
   State<DriverScreen> createState() => _DriverScreenState();
@@ -94,7 +95,7 @@ class _DriverScreenState extends State<DriverScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8F0),
       appBar: AppBar(
-        title: const Text('Driver Panel'),
+        title: Text('Driver - ${widget.userName}'),
         backgroundColor: const Color(0xFFE65100),
         foregroundColor: Colors.white,
       ),

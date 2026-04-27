@@ -4,7 +4,8 @@ import 'dart:convert';
 import '../config.dart';
 
 class ModeratorScreen extends StatefulWidget {
-  const ModeratorScreen({super.key});
+  final String userName;
+  const ModeratorScreen({super.key, required this.userName});
 
   @override
   State<ModeratorScreen> createState() => _ModeratorScreenState();
@@ -109,7 +110,7 @@ Widget build(BuildContext context) {
     length: 3,
     child: Scaffold(
       appBar: AppBar(
-        title: const Text('Moderator Panel'),
+        title: Text('Moderator - ${widget.userName}'),
         backgroundColor: const Color(0xFF2E7D32),
         foregroundColor: Colors.white,
         bottom: const TabBar(
